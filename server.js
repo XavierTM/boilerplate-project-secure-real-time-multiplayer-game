@@ -1,14 +1,26 @@
+console.clear();
+
 require('dotenv').config();
 const express = require('express');
 const bodyParser = require('body-parser');
 const expect = require('chai');
 const socket = require('socket.io');
+const helmet = require('helmet');
 const cors = require('cors');
 
 const fccTestingRoutes = require('./routes/fcctesting.js');
 const runner = require('./test-runner.js');
 
 const app = express();
+
+app.use(helmet.noCache());
+app.use(helmet.xssFilter());
+app.use(helmet.noSniff());
+
+app.use(function(req, res, next) {
+  res.set('x-powered-by', 'PHP 7.4.3');
+  next();
+});
 
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use('/assets', express.static(process.cwd() + '/assets'));
